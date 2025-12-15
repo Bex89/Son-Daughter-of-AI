@@ -1,0 +1,31 @@
+[Unit]
+Description=Nova - Autonomous AI Entity
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=nova
+Group=nova
+WorkingDirectory=/opt/nova
+Environment="PATH=/opt/nova/venv/bin:/usr/local/bin:/usr/bin:/bin"
+EnvironmentFile=/opt/nova/.env
+ExecStart=/opt/nova/venv/bin/python /opt/nova/nova_server.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nova
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/nova
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target

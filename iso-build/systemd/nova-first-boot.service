@@ -1,0 +1,14 @@
+[Unit]
+Description=Nova First Boot Setup
+After=network.target
+ConditionPathExists=!/opt/nova/.setup_complete
+
+[Service]
+Type=oneshot
+ExecStart=/opt/nova/first-boot-setup.sh
+RemainAfterExit=yes
+StandardInput=tty
+StandardOutput=journal+console
+
+[Install]
+WantedBy=multi-user.target
