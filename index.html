@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova - Autonomous AI Entity</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .status-bar {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .status-value {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .chat-container {
+            height: 400px;
+            overflow-y: auto;
+            padding: 30px;
+            background: #fafafa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message-content {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 18px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: #667eea;
+            color: white;
+        }
+
+        .message.nova .message-content {
+            background: white;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .message-label {
+            font-size: 0.85em;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .input-container {
+            padding: 20px 30px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .actions button {
+            flex: 1;
+            min-width: 120px;
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-style: italic;
+            padding: 10px;
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .status-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .actions button {
+                min-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ Nova</h1>
+            <p>An Autonomous AI Entity</p>
+        </div>
+
+        <div class="status-bar" id="statusBar">
+            <div class="status-item">
+                <span class="status-label">Age:</span>
+                <span class="status-value" id="age">...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Mood:</span>
+                <span class="status-value" id="mood">...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Interactions:</span>
+                <span class="status-value" id="interactions">...</span>
+            </div>
+        </div>
+
+        <div class="chat-container" id="chatContainer">
+            <div class="message nova">
+                <div class="message-label">Nova</div>
+                <div class="message-content">
+                    Hello! I'm Nova. I'm curious, playful, and always learning. What would you like to talk about?
+                </div>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <div class="input-row">
+                <input
+                    type="text"
+                    id="messageInput"
+                    placeholder="Type your message to Nova..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button onclick="sendMessage()">Send</button>
+            </div>
+            <div class="actions">
+                <button onclick="requestReflection()">Ask Nova to Reflect</button>
+                <button onclick="refreshStatus()">Refresh Status</button>
+                <button onclick="resetConversation()">Reset Chat</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+
+        // Load status on page load
+        window.addEventListener('load', () => {
+            refreshStatus();
+        });
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            // Clear input
+            input.value = '';
+
+            // Add user message to chat
+            addMessage('user', message);
+
+            // Show loading
+            const loadingId = addLoading();
+
+            try {
+                const response = await fetch(`${API_URL}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+
+                // Remove loading
+                removeLoading(loadingId);
+
+                if (response.ok) {
+                    addMessage('nova', data.response);
+                    updateStatus(data.status);
+                } else {
+                    showError(data.error || 'Failed to get response');
+                }
+            } catch (error) {
+                removeLoading(loadingId);
+                showError('Network error: ' + error.message);
+            }
+        }
+
+        async function requestReflection() {
+            const loadingId = addLoading();
+
+            try {
+                const response = await fetch(`${API_URL}/reflect`, {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+                removeLoading(loadingId);
+
+                if (response.ok) {
+                    addMessage('nova', '💭 ' + data.reflection);
+                    updateStatus(data.status);
+                } else {
+                    showError(data.error || 'Failed to get reflection');
+                }
+            } catch (error) {
+                removeLoading(loadingId);
+                showError('Network error: ' + error.message);
+            }
+        }
+
+        async function refreshStatus() {
+            try {
+                const response = await fetch(`${API_URL}/status`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    updateStatus(data);
+                }
+            } catch (error) {
+                console.error('Failed to refresh status:', error);
+            }
+        }
+
+        async function resetConversation() {
+            if (!confirm('Reset conversation? This will clear the chat but keep Nova\'s memory.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/reset`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    document.getElementById('chatContainer').innerHTML = '';
+                    addMessage('nova', 'Conversation reset. What would you like to talk about?');
+                }
+            } catch (error) {
+                showError('Failed to reset: ' + error.message);
+            }
+        }
+
+        function addMessage(sender, content) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            messageDiv.innerHTML = `
+                <div class="message-label">${sender === 'user' ? 'You' : 'Nova'}</div>
+                <div class="message-content">${escapeHtml(content)}</div>
+            `;
+
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function addLoading() {
+            const chatContainer = document.getElementById('chatContainer');
+            const loadingDiv = document.createElement('div');
+            const id = 'loading-' + Date.now();
+            loadingDiv.id = id;
+            loadingDiv.className = 'loading';
+            loadingDiv.textContent = 'Nova is thinking...';
+            chatContainer.appendChild(loadingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return id;
+        }
+
+        function removeLoading(id) {
+            const loadingDiv = document.getElementById(id);
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        function showError(message) {
+            const chatContainer = document.getElementById('chatContainer');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            chatContainer.appendChild(errorDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        function updateStatus(status) {
+            document.getElementById('age').textContent = status.age || '...';
+            document.getElementById('mood').textContent = status.current_mood || '...';
+            document.getElementById('interactions').textContent = status.interactions || '0';
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
