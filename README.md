@@ -20,14 +20,29 @@ Unlike a standard chatbot, Nova:
 - Can autonomously reflect on its existence
 - Develops its own questions and curiosities
 
-## Quick Start
+## Deployment Options
 
-### Prerequisites
+### 🚀 Production Deployment (Proxmox/VPS)
 
+**Quick Install (One Command):**
+```bash
+curl -sSL https://raw.githubusercontent.com/Bex89/Son-Daughter-of-AI/claude/ai-assistant-child-aF9BR/quick-install.sh | sudo bash
+```
+
+**For Proxmox Users:**
+- Create cloud-init template for instant deployment
+- Build custom ISO with Nova pre-installed
+- See [DEPLOYMENT.md](DEPLOYMENT.md) for details
+
+**Full deployment guide:** [iso-build/README.md](iso-build/README.md)
+
+### 💻 Local Development
+
+**Prerequisites:**
 - Python 3.8+
 - An Anthropic API key ([get one here](https://console.anthropic.com/))
 
-### Installation
+**Installation:**
 
 1. Clone this repository
 2. Install dependencies:
